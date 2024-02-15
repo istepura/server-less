@@ -6,9 +6,16 @@ const { logDir } = require('../env')
 
 /**
  * @openapi
+ * tags:
+ *   - name: Files
+ *     description: API to retrieve the list of files
+ */
+
+/**
+ * @openapi
  * /files:
- *   tags: [files]
  *   get:
+ *     tags: [Files]
  *     description: Retireves list of files in the log dir
  *     responses:
  *       200:

@@ -10,7 +10,7 @@ const app = express()
 /**
  * @openapi
  * tags:
- *   - name: 'files'
+ *   - name: Files
  *     description: API to retrieve the list of files
  */
 app.use('/files', files)
