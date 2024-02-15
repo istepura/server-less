@@ -7,12 +7,15 @@ const swaggerUi = require('swagger-ui-express')
 
 const app = express()
 
-/**
- * @openapi
- * tags:
- *   - name: Files
- *     description: API to retrieve the list of files
- */
+const logErrors = (err, req, res, next) => {
+  console.error(err.stack)
+  next(err)
+}
+
+const globalErrorHandler = (err, req, res, next) => {
+  res.status(500)
+  res.send({ error: err })
+}
 app.use('/files', files)
 
 const options = {
@@ -31,6 +34,8 @@ const openapiSpecification = swaggerJsdoc(options)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 
+app.use(logErrors)
+app.use(globalErrorHandler)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

@@ -36,7 +36,6 @@ router.get('/', async (req, res, next) => {
     const files = await readdir(logDir)
     res.send({ files })
   } catch (err) {
-    console.error(err)
     next(err)
   }
 })
