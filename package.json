@@ -1,0 +1,14 @@
+{
+  "name": "server-less",
+  "version": "1.0.0",
+  "description": "Prototytpe of REST API server to read log files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Igor Stepura",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
