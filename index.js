@@ -1,22 +1,15 @@
 const express = require('express')
 const { port } = require('./env')
 const files = require('./routes/filelist')
+const logs = require('./routes/logs')
 
 const swaggerJsdoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
 
 const app = express()
 
-const logErrors = (err, req, res, next) => {
-  console.error(err.stack)
-  next(err)
-}
-
-const globalErrorHandler = (err, req, res, next) => {
-  res.status(500)
-  res.send({ error: err })
-}
 app.use('/files', files)
+app.use('/logs', logs)
 
 const options = {
   failOnErrors: true,
@@ -33,9 +26,17 @@ const options = {
 const openapiSpecification = swaggerJsdoc(options)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 
+const logErrors = (err, req, res, next) => {
+  console.error(err.stack)
+  next(err)
+}
+
+const globalErrorHandler = (err, req, res, next) => {
+  res.status(500)
+  res.send({ error: err })
+}
 app.use(logErrors)
 app.use(globalErrorHandler)
-
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
