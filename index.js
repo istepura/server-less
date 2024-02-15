@@ -31,11 +31,12 @@ const options = {
 }
 
 const openapiSpecification = swaggerJsdoc(options)
-
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 
 app.use(logErrors)
 app.use(globalErrorHandler)
+
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`App listening on port ${port}`)
 })
