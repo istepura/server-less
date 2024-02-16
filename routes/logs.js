@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { LOG_DIR, MAX_PAGE_SIZE } = require('../env')
-const { filereader } = require('../core/filreader')
+const { filereader } = require('../core/filereader')
 
 /**
  * @openapi
@@ -66,7 +66,7 @@ router.get('/:fileName', async (req, res, next) => {
     limit = Math.min(parseInt(limit) || MAX_PAGE_SIZE, MAX_PAGE_SIZE)
 
     // FIXME: We may need to do some sanity checking here.
-    startPosition = parseInt(startPosition) || -1
+    startPosition = parseInt(startPosition)
 
     const result = await filereader(
       `${LOG_DIR}/${fileName}`,

@@ -45,14 +45,16 @@ module.exports.filereader = async (filePath, limit, filter, startPosition) => {
     // Since we've chose simple-brute-forceish approach for this sprint,
     // and read the file *from the beginning*, startPosition is where we
     // should stop
-    if (startPosition > 0 && pos >= startPosition) {
+    if (pos > startPosition) {
       break
     }
   }
 
+  const nextPage = positions.length > 0 ? positions[0] - 1 : -1
+
   return {
     lines: lines.reverse(),
     count: lines.length,
-    nextPage: positions[0] - 1 || -1
+    nextPage
   }
 }
