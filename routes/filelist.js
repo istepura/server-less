@@ -2,7 +2,7 @@ const { readdir } = require('node:fs/promises')
 
 const express = require('express')
 const router = express.Router()
-const { logDir } = require('../env')
+const { LOG_DIR } = require('../env')
 
 /**
  * @openapi
@@ -22,6 +22,8 @@ const { logDir } = require('../env')
  *         description: List of files.
  *         content:
  *           application/json:
+ *             example:
+ *               files: ["file.log", "someother.log"]
  *             schema:
  *               type: object
  *               properties:
@@ -33,7 +35,7 @@ const { logDir } = require('../env')
  */
 router.get('/', async (req, res, next) => {
   try {
-    const files = await readdir(logDir)
+    const files = await readdir(LOG_DIR)
     res.send({ files })
   } catch (err) {
     next(err)

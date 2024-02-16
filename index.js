@@ -1,5 +1,5 @@
 const express = require('express')
-const { port } = require('./env')
+const { PORT } = require('./env')
 const files = require('./routes/filelist')
 const logs = require('./routes/logs')
 
@@ -38,6 +38,6 @@ const globalErrorHandler = (err, req, res, next) => {
 app.use(logErrors)
 app.use(globalErrorHandler)
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`)
 })

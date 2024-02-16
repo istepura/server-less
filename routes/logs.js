@@ -1,33 +1,48 @@
 const express = require('express')
 const router = express.Router()
-const { logDir } = require('../env')
-const { open } = require('node:fs/promises')
+const { LOG_DIR, MAX_PAGE_SIZE } = require('../env')
+const { filereader } = require('../core/filreader')
 
 /**
  * @openapi
  * /logs/{fileName}:
  *   get:
  *     tags: [Logs]
- *     description: Retireves list of files in the log dir
+ *     description: Reads log lines from the file
  *     parameters:
  *        - name: fileName
+ *          description: Name of the file to read from
  *          in: path
  *          schema:
  *            type: string
  *          required: true
  *        - name: limit
+ *          description: Maximum number of lines to read
  *          in: query
  *          schema:
  *            type: integer
  *        - name: filter
+ *          description: Filter string (simple text matching). Only lines containing filter string willl be returned
  *          in: query
  *          schema:
  *            type: string
+ *        - name: startPosition
+ *          description: The position in file to read from.
+ *            If not specified, the most recent entries will be returned.
+ *            Use `nextPage` from the previous response to implement pagination
+ *            (The values of other parameters must be identical to those in the previous call.)
+ *          in: query
+ *          schema:
+ *            type: integer
  *     responses:
  *       200:
- *         description: List of files.
+ *         description: OK
  *         content:
  *           application/json:
+ *             example:
+ *                lines: ["a", "b", "c"]
+ *                count: 3
+ *                nextPage: 330
  *             schema:
  *               type: object
  *               properties:
@@ -36,35 +51,34 @@ const { open } = require('node:fs/promises')
  *                    items:
  *                      description: Logs lines from the specified file
  *                      type: string
- *
+ *                 count:
+ *                    type: integer
+ *                    description: Number of lines that were read from the file
+ *                 nextPage:
+ *                    type: integer
+ *                    description: Indicates that more data can be read. -1 if no more data is available
  */
-
 router.get('/:fileName', async (req, res, next) => {
   try {
     const fileName = req.params.fileName
-    const { filter, limit } = req.query
+    let { filter, limit, startPosition } = req.query
 
-    const lines = await filereader(`${logDir}/${fileName}`, limit, filter)
+    limit = Math.min(parseInt(limit) || MAX_PAGE_SIZE, MAX_PAGE_SIZE)
 
-    res.send({ lines })
+    // FIXME: We may need to do some sanity checking here.
+    startPosition = parseInt(startPosition) || -1
+
+    const result = await filereader(
+      `${LOG_DIR}/${fileName}`,
+      limit,
+      filter,
+      startPosition
+    )
+
+    res.send(result)
   } catch (err) {
     next(err)
   }
 })
-
-const filereader = async (filePath, limit, filter) => {
-  const lines = []
-
-  const file = await open(filePath)
-  for await (const line of file.readLines()) {
-    if (!filter || line.includes(filter)) {
-      lines.push(line)
-    }
-    if (limit > 0 && lines.length > limit) {
-      lines.shift()
-    }
-  }
-  return lines.reverse()
-}
 
 module.exports = router
